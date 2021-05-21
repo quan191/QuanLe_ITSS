@@ -13,13 +13,15 @@ import Input from './Input';
 import Filter from './Filter';
 
 /* カスタムフック */
-import useStorage from '../hooks/storage';
+// import useStorage from '../hooks/storage';
+import useFbStorage from '../hooks/fbStorage';
 
 /* ライブラリ */
 import {getKey} from "../lib/util";
 
 function Todo() {
-  const [items, putItems, clearItems] = useStorage();
+  // const [items, putItems, clearItems] = useStorage();
+  const [items, addItem, updateItem, clearItems] = useFbStorage();
 
   const [filter, setFilter] = React.useState('ALL');
 
@@ -30,25 +32,32 @@ function Todo() {
   });
 
   const handleCheck = checked => {
-    const newItems = items.map(item => {
-      if (item.key === checked.key) {
-        item.done = !item.done;
-      }
-      return item;
-    });
-    putItems(newItems);
+    // const newItems = items.map(item => {
+    //   if (item.key === checked.key) {
+    //     item.done = !item.done;
+    //   }
+    //   return item;
+    // });
+    // putItems(newItems);
+    updateItem(checked);
   };
 
   const handleAdd = text => {
-    putItems([...items, { key: getKey(), text, done: false }]);
+    // putItems([...items, { key: getKey(), text, done: false }]);
+    addItem({ text, done: false });
   };
 
   const handleFilterChange = value => setFilter(value);
   
   return (
-    <div className="panel">
+    <article class="panel is-danger">
       <div className="panel-heading">
-        ITSS ToDoアプリ
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-calendar-check"></i>
+          </span>
+          <span> ITSS Todoアプリ</span>
+        </span>
       </div>
       <Input onAdd={handleAdd} />
       <Filter
@@ -56,7 +65,11 @@ function Todo() {
         value={filter}
       />
       {displayItems.map(item => (
-        <TodoItem key={item.key} item={item} onCheck={handleCheck} />
+        <TodoItem 
+          key={item.id}
+          item={item}
+          onCheck={handleCheck}
+        />
       ))}
       <div className="panel-block">
         {displayItems.length} items
@@ -66,7 +79,7 @@ function Todo() {
           全てのToDoを削除
         </button>
       </div>
-    </div>
+    </article>
   );
 }
 
